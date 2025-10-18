@@ -59,7 +59,7 @@ public class Search {
      *
      *  */
 
-    public static <T> List<Map.Entry<T, Double>> fuzzySearch(
+    public static <T extends Searchable> List<Map.Entry<T, Double>> fuzzySearch(
             String query,
             Map<String, List<T>> invertedIndex,
             Function<T, List<String>> allWordsExtractor) {
@@ -127,7 +127,8 @@ public class Search {
                 ));
     }
 
-    public static <T> List<String> getSearchParameters(T item, Function<T, List<String>> textExtractor) {
+    public static <T extends Searchable> List<String> getSearchParameters(T item, Function<T, List<String>> textExtractor) {
+
         return textExtractor.apply(item).stream()
                 .filter(Objects::nonNull)
                 .flatMap(s -> Arrays.stream(s.toLowerCase().split("\\s+")))
