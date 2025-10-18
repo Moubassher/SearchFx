@@ -1,0 +1,11 @@
+{ "rules": [
+    {"excludeClasses" : "com.context.searcher.sun.glass.ui.mac.*"},
+    {"excludeClasses" : "com.context.searcher.sun.glass.ui.gtk.*"},
+    {"excludeClasses" : "com.context.searcher.sun.glass.ui.win.*"},
+    {"excludeClasses" : "com.context.searcher.sun.prism.es2.*"},
+    {"excludeClasses" : "com.context.searcher.sun.prism.d3d.*"},
+    {"excludeClasses" : "com.context.searcher.sun.scenario.effect.impl.es2.*"},
+    {"excludeClasses" : "com.context.searcher.sun.scenario.effect.impl.hw.d3d.*"},
+    {"excludeClasses" : "com.context.searcher.gluonhq.attach.**"}
+  ]
+}

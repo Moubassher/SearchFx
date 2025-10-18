@@ -1,0 +1,85 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'application'
+
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+group 'com.context'
+version '1.0.0'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+application {
+    mainClass = 'com.context.search.Main'
+
+    applicationDefaultJvmArgs = [
+            '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+            '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED',
+            '--add-opens', 'java.base/java.util=ALL-UNNAMED'
+    ]
+}
+
+def javafxVersion = '23.0.1'
+
+javafx {
+    version = javafxVersion
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.web', 'javafx.media', 'javafx.graphics']
+}
+
+
+dependencies {
+
+    implementation "org.openjfx:javafx-base:$javafxVersion:win"
+    implementation "org.openjfx:javafx-media:$javafxVersion:win"
+    implementation "org.openjfx:javafx-controls:$javafxVersion:win"
+    implementation "org.openjfx:javafx-fxml:$javafxVersion:win"
+    implementation "org.openjfx:javafx-web:$javafxVersion:win"
+    implementation "org.openjfx:javafx-graphics:$javafxVersion:win"
+
+
+    implementation 'me.xdrop:fuzzywuzzy:1.4.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
+}
+
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifactId = 'searcher'
+
+        }
+    }
+    repositories {
+        mavenLocal() // this is the key line
+    }
+}
+
+
+run {
+    jvmArgs += [
+            "--module-path", configurations.runtimeClasspath.asPath,
+            "--add-modules=javafx.controls,javafx.fxml,javafx.media,javafx.web,javafx.graphics,javafx.base",
+    ]
+}
+
+
+test {
+    useJUnitPlatform()
+}
+
