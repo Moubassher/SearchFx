@@ -26,7 +26,7 @@ public class Main extends Application {
 
             return results;
         });
-        
+
         VBox root = new VBox(10, searchBar, results);
         Scene scene = new Scene(root, 500, 500);
         stage.setScene(scene);
