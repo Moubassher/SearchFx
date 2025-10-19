@@ -1,10 +1,12 @@
 package com.moubassher.search;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.FlowPane;
@@ -35,6 +37,15 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
     private List<T> items;
 
     private Map<String, Map<String, List<T>>> invertedIndex;
+
+    public SearchBar(List<T> items, T prototype) {
+        this(); // call default constructor
+
+        setExpanded(true);
+        setSearchable(prototype);
+        setItems(items);
+
+    }
 
     public SearchBar() {
         FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("search_bar.fxml"));

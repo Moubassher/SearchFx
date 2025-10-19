@@ -14,12 +14,11 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        SearchBar searchBar = new SearchBar();
-        searchBar.setExpanded(true);
-        searchBar.setSearchable(new TestProduct());
 
         List<TestProduct> products = createTestProducts();
-        searchBar.setItems(products);
+
+        SearchBar searchBar = new SearchBar(products, new TestProduct());
+
         ListView<TestProduct> results = new ListView<>();
         searchBar.activateSearch(queryResults -> {
             ObservableList<TestProduct> matches = (ObservableList<TestProduct>) queryResults;
