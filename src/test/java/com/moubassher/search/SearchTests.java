@@ -1,6 +1,6 @@
-package com.context.search;
+package com.moubassher.search;
 
-import com.context.search.testSearchables.TestProduct;
+import com.moubassher.search.testSearchables.TestProduct;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.context.search.Search.buildInvertedIndex;
-import static com.context.search.Search.fuzzySearch;
+import static com.moubassher.search.Search.buildInvertedIndex;
+import static com.moubassher.search.Search.fuzzySearch;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SearchTests {

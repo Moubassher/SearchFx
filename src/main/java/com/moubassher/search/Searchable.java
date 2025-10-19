@@ -1,4 +1,4 @@
-package com.context.search;
+package com.moubassher.search;
 
 import java.util.Map;
 import java.util.function.Function;

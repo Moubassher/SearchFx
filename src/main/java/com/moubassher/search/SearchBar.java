@@ -1,4 +1,4 @@
-package com.context.search;
+package com.moubassher.search;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

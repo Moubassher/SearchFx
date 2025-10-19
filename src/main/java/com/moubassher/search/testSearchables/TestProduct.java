@@ -1,6 +1,6 @@
-package com.context.search.testSearchables;
+package com.moubassher.search.testSearchables;
 
-import com.context.search.Searchable;
+import com.moubassher.search.Searchable;
 
 import java.util.HashMap;
 import java.util.Map;

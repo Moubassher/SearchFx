@@ -1,6 +1,4 @@
-package com.context.search;
-
-import me.xdrop.fuzzywuzzy.FuzzySearch;
+package com.moubassher.search;
 
 import java.util.*;
 import java.util.function.Function;
