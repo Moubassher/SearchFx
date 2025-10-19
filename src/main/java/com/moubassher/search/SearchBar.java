@@ -34,6 +34,8 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
 
     private Map<String, Map<String, List<T>>> invertedIndex;
 
+    //TODO add range filters for int parameters
+
     public SearchBar(List<T> items, T prototype) {
         this(); // call default constructor
 
@@ -55,15 +57,15 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
         }
     }
 
+    public void activateSearch(List<T> items, T prototype, Function<List<T>, Pane> resultFunc) {
+        this.setItems(items);
+        setSearchable(prototype);
+        activateSearch(resultFunc);
+    }
+
     public void setItems(List<T> items) {
         this.items = items;
         invertedIndex = Search.buildInvertedIndex(items);
-    }
-
-    public void activateSearch(List<T> items, T prototype, Function<List<T>, Pane> resultFunc) {
-        this.items = items;
-        setSearchable(prototype);
-        activateSearch(resultFunc);
     }
 
     public void activateSearch(Function<List<T>, Pane> resultFunc) {
