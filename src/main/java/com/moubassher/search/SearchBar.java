@@ -55,6 +55,14 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        titledPane.expandedProperty().addListener((a, b, expanded) ->{
+            if(expanded) {
+                this.toFront();
+            } else {
+                this.toBack();
+            }
+        });
     }
 
     public void activateSearch(List<T> items, T prototype, Function<List<T>, Pane> resultFunc) {
