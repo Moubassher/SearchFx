@@ -7,9 +7,12 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class TestProduct implements Searchable<TestProduct> {
-    private final String name;
-    private final String category;
-    private final String description;
+    private  String name;
+    private  String category;
+    private  String description;
+
+    public TestProduct() {
+    }
 
     public TestProduct(String name, String category, String description) {
         this.name = name;
@@ -40,6 +43,6 @@ public class TestProduct implements Searchable<TestProduct> {
 
     @Override
     public String toString() {
-        return name;
+        return name + " ; " + description + " ; " + category;
     }
 }

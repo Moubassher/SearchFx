@@ -20,7 +20,7 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainClass = 'com.context.search.Main'
+    mainClass = 'com.moubassher.search.Main'
 
     applicationDefaultJvmArgs = [
             '--add-opens', 'java.base/java.lang=ALL-UNNAMED',

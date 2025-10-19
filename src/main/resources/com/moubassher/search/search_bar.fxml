@@ -17,7 +17,7 @@
       </HBox>
       <TitledPane fx:id="titledPane" expanded="false" nodeOrientation="RIGHT_TO_LEFT" prefHeight="200.0" prefWidth="200.0" text="بحث متقدّم">
          <content>
-            <FlowPane fx:id="criteriaPane" nodeOrientation="RIGHT_TO_LEFT" prefHeight="200.0" prefWidth="200.0" styleClass="pane" />
+            <FlowPane fx:id="filtersPane" hgap="5.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="200.0" prefWidth="200.0" styleClass="pane" vgap="5.0" />
          </content>
       </TitledPane>
    </children>

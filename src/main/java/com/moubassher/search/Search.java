@@ -1,5 +1,8 @@
 package com.moubassher.search;
 
+import me.xdrop.fuzzywuzzy.FuzzySearch;
+import me.xdrop.fuzzywuzzy.model.ExtractedResult;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -47,6 +50,7 @@ public class Search {
      * @see Searchable
      */
 
+
     public static <T extends Searchable<T>> List<Map.Entry<T, Double>> fuzzySearch(
             String query,
             List<T> allItems,
@@ -62,25 +66,32 @@ public class Search {
         int totalDocs = allItems.size();
 
         for (String word : words) {
-            Map<String, List<T>> fieldMap = invertedIndex.get(word);
-            if (fieldMap == null) continue;
+            // Fuzzy match: find closest key in the inverted index
+            List<ExtractedResult> matches = FuzzySearch.extractAll(word, new ArrayList<>(invertedIndex.keySet()));
+            for (ExtractedResult match : matches) {
+                if (match.getScore() < 70) continue; // ignore weak matches
 
-            // include only active fields
-            Set<T> matchingItems = fieldMap.entrySet().stream()
-                    .filter(e -> activeFields.contains(e.getKey()))
-                    .flatMap(e -> e.getValue().stream())
-                    .collect(Collectors.toSet());
+                Map<String, List<T>> fieldMap = invertedIndex.get(match.getString());
+                if (fieldMap == null) continue;
 
-            // compute IDF
-            double idf = Math.log((double) totalDocs / (1 + matchingItems.size()));
+                // include only active fields
+                Set<T> matchingItems = fieldMap.entrySet().stream()
+                        .filter(e -> activeFields.contains(e.getKey()))
+                        .flatMap(e -> e.getValue().stream())
+                        .collect(Collectors.toSet());
 
-            // accumulate weighted scores
-            for (T item : matchingItems) {
-                scores.merge(item, idf, Double::sum);
+                // compute IDF
+                double idf = Math.log((double) totalDocs / (1 + matchingItems.size()));
+
+                // accumulate weighted scores
+                for (T item : matchingItems) {
+                    scores.merge(item, idf, Double::sum);
+                }
             }
+
         }
 
-        List<Map.Entry<T, Double>> ranked= scores.entrySet().stream()
+        List<Map.Entry<T, Double>> ranked = scores.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .collect(Collectors.toList());
 
