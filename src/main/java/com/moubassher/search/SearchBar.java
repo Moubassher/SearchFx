@@ -1,12 +1,9 @@
 package com.moubassher.search;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.FlowPane;
@@ -14,7 +11,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -41,7 +37,6 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
     public SearchBar(List<T> items, T prototype) {
         this(); // call default constructor
 
-        setExpanded(true);
         setSearchable(prototype);
         setItems(items);
 
@@ -64,6 +59,13 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
         this.items = items;
         invertedIndex = Search.buildInvertedIndex(items);
     }
+
+    public void activateSearch(List<T> items, T prototype, Function<List<T>, Pane> resultFunc) {
+        this.items = items;
+        setSearchable(prototype);
+        activateSearch(resultFunc);
+    }
+
     public void activateSearch(Function<List<T>, Pane> resultFunc) {
         if (activeFields.isEmpty()) {
             activeFields = readActiveFilters();

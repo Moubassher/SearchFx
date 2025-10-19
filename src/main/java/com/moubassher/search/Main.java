@@ -17,16 +17,16 @@ public class Main extends Application {
 
         List<TestProduct> products = createTestProducts();
 
-        SearchBar searchBar = new SearchBar(products, new TestProduct());
+        SearchBar searchBar = new SearchBar();
 
         ListView<TestProduct> results = new ListView<>();
-        searchBar.activateSearch(queryResults -> {
+        searchBar.activateSearch(products, new TestProduct(), queryResults -> {
             ObservableList<TestProduct> matches = (ObservableList<TestProduct>) queryResults;
             results.setItems(matches);
 
             return results;
         });
-
+        
         VBox root = new VBox(10, searchBar, results);
         Scene scene = new Scene(root, 500, 500);
         stage.setScene(scene);
