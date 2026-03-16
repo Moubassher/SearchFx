@@ -6,4 +6,6 @@ import java.util.function.Function;
 public interface Searchable<T> {
 
     Map<String, Function<T, String>> getSearchableFields();
+
+    Map<String, Function<T, Boolean>> getBooleanFilters();
 }

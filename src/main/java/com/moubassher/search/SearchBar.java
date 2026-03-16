@@ -30,7 +30,7 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
     private TitledPane titledPane;
 
     @FXML
-    private FlowPane filtersPane;
+    private FlowPane filtersPane, criteriaPane;
 
     @FXML
     private Pane rangePane;
@@ -44,6 +44,9 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
     private Map<String, Map<String, List<T>>> invertedIndex;
 
     private List<RangeFilter<T>> rangeFilters = new ArrayList<>();
+
+    private Map<String, Function<T, Boolean>> booleanFilters = new HashMap<>();
+    private Set<String> activeBooleanFilters = new HashSet<>();
 
     private ResultHandler<T> resultHandler;
 
@@ -101,8 +104,6 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
             return;
         }
 
-        System.out.println("active fields:" + activeFields);
-
         List<Map.Entry<T, Double>> ranked =
                 Search.fuzzySearch(query, items, invertedIndex, activeFields);
 
@@ -110,6 +111,7 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
                 ranked.stream()
                         .map(Map.Entry::getKey)
                         .filter(this::passesRangeFilters)
+                        .filter(this::passesBooleanFilters)
                         .toList();
 
         resultHandler.show(resultItems);
@@ -133,6 +135,7 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
     public void setSearchable(T searchable) {
         this.searchable = searchable;
         addFilters();
+        addBooleanFilters();
     }
 
 
@@ -155,8 +158,6 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
         });
     }
 
-
-
     public void addRangeFunction(String name, ToIntFunction<T> func) {
 
         Label label = new Label(name);
@@ -175,6 +176,50 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
         rangePane.getChildren().add(row);
 
         rangeFilters.add(new RangeFilter<>(name, func, min, max));
+    }
+
+    public void addCriterion(String name, Function<T, Boolean> criterionFunc) {
+
+        CheckBox checkBox = new CheckBox(name);
+        checkBox.setSelected(true);   // active by default
+
+        // add checkbox directly to criteriaPane
+        criteriaPane.getChildren().add(checkBox);
+
+        // store function
+        booleanFilters.put(name, criterionFunc);
+
+        // mark active initially
+        activeBooleanFilters.add(name);
+
+        // update active set on toggle
+        checkBox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
+            if (isNowSelected) {
+                activeBooleanFilters.add(name);
+            } else {
+                activeBooleanFilters.remove(name);
+            }
+            runSearch();
+        });
+    }
+
+    private void addBooleanFilters() {
+        booleanFilters = searchable.getBooleanFilters();
+
+        booleanFilters.forEach((label, func) -> {
+            CheckBox cb = new CheckBox(label);
+            cb.setSelected(true); // default enabled
+            filtersPane.getChildren().add(cb);
+
+            cb.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
+                if (isNowSelected) {
+                    activeBooleanFilters.add(label);
+                } else {
+                    activeBooleanFilters.remove(label);
+                }
+                runSearch();
+            });
+        });
     }
 
 
@@ -201,6 +246,16 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
 
         return true;
     }
+
+    private boolean passesBooleanFilters(T item) {
+        for (String activeLabel : activeBooleanFilters) {
+            Function<T, Boolean> func = booleanFilters.get(activeLabel);
+            if (func != null && !func.apply(item)) return false;
+        }
+        return true;
+    }
+
+
     private Integer tryParseInt(String text) {
 
         if (text == null || text.isBlank()) return null;

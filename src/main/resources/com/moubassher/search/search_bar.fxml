@@ -18,10 +18,20 @@
       </HBox>
       <TitledPane fx:id="titledPane" expanded="false" nodeOrientation="RIGHT_TO_LEFT" prefHeight="150.0" prefWidth="200.0" text="بحث متقدّم">
          <content>
-            <VBox>
+            <VBox spacing="10.0">
                <children>
                   <Label styleClass="underlined" text="بحث باستخدام:" />
-                  <FlowPane fx:id="filtersPane" hgap="5.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="200.0" prefWidth="200.0" styleClass="pane" vgap="5.0" />
+                  <ScrollPane fitToHeight="true" fitToWidth="true">
+                     <content>
+                        <FlowPane fx:id="filtersPane" hgap="5.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="200.0" prefWidth="200.0" styleClass="pane" vgap="5.0" />
+                     </content>
+                  </ScrollPane>
+                  <Label text="شروط النتائج:" />
+                  <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
+                     <content>
+                        <FlowPane fx:id="criteriaPane" />
+                     </content>
+                  </ScrollPane>
                   <Label styleClass="underlined" text="تحديد النطاق:" />
                   <ScrollPane fitToHeight="true" fitToWidth="true" pannable="true">
                      <content>

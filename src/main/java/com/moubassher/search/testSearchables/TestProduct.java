@@ -11,14 +11,16 @@ public class TestProduct implements Searchable<TestProduct> {
     private  String category;
     private  String description;
     private int price;
+    private boolean hasDiscount;
     public TestProduct() {
     }
 
-    public TestProduct(String name, String category, String description, int price) {
+    public TestProduct(String name, String category, String description, int price, boolean hasDiscount) {
         this.name = name;
         this.category = category;
         this.description = description;
         this.price = price;
+        this.hasDiscount = hasDiscount;
     }
 
     public String getName() {
@@ -37,6 +39,14 @@ public class TestProduct implements Searchable<TestProduct> {
         return price;
     }
 
+    public void setHasDiscount(boolean hasDiscount) {
+        this.hasDiscount = hasDiscount;
+    }
+
+    public boolean hasDiscount() {
+        return hasDiscount;
+    }
+
     @Override
     public Map<String, Function<TestProduct, String>> getSearchableFields() {
         Map<String, Function<TestProduct, String>> fields = new HashMap<>();
@@ -44,6 +54,13 @@ public class TestProduct implements Searchable<TestProduct> {
         fields.put("category", p -> p.getCategory());
         fields.put("description", p -> p.getDescription());
         return fields;
+    }
+
+    @Override
+    public Map<String, Function<TestProduct, Boolean>> getBooleanFilters() {
+        Map<String, Function<TestProduct, Boolean>> booleanFilters = new HashMap<>();
+        booleanFilters.put("تخفيض", p -> p.hasDiscount);
+        return booleanFilters;
     }
 
     @Override
