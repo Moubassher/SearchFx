@@ -76,36 +76,43 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
         });
     }
 
+
     private void activateSearch() {
 
         if (activeFields.isEmpty()) {
             activeFields = readActiveFilters();
         }
 
-        searchField.textProperty().addListener((obs, oldText, query) -> {
+        // run search when typing
+        searchField.textProperty().addListener(
+                (obs, oldText, query) -> runSearch());
+    }
 
-            // If query empty → show all items (better UX)
-            if (query == null || query.isBlank()) {
 
-                List<T> filtered = items.stream()
-                                .filter(this::passesRangeFilters)
-                                .toList();
+    private void runSearch() {
+        String query = searchField.getText();
 
-                resultHandler.show(filtered);
-                return;
-            }
+        // If query empty → show all items
+        if (query == null || query.isBlank()) {
+            List<T> filtered = items.stream()
+                    .filter(this::passesRangeFilters)
+                    .toList();
+            resultHandler.show(filtered);
+            return;
+        }
 
-            List<Map.Entry<T, Double>> ranked =
-                    Search.fuzzySearch(query, items, invertedIndex, activeFields);
+        System.out.println("active fields:" + activeFields);
 
-            List<T> resultItems =
-                    ranked.stream()
-                            .map(Map.Entry::getKey)
-                            .filter(this::passesRangeFilters)
-                            .toList();
+        List<Map.Entry<T, Double>> ranked =
+                Search.fuzzySearch(query, items, invertedIndex, activeFields);
 
-            resultHandler.show(resultItems);
-        });
+        List<T> resultItems =
+                ranked.stream()
+                        .map(Map.Entry::getKey)
+                        .filter(this::passesRangeFilters)
+                        .toList();
+
+        resultHandler.show(resultItems);
     }
 
     public void setItems(List<T> items) {
@@ -125,26 +132,25 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
 
     public void setSearchable(T searchable) {
         this.searchable = searchable;
-        addFilters(); // now that we know what searchable type we have, build filters
+        addFilters();
     }
 
 
     public void addFilters() {
-
         Map<String, Function<T, String>> fields = searchable.getSearchableFields();
 
         fields.forEach((field, function) -> {
             CheckBox filterBox = new CheckBox(field);
-            filterBox.setSelected(true); // enabled by default (optional)
+            filterBox.setSelected(true); // enabled by default
             filtersPane.getChildren().add(filterBox);
 
-            // Optional: keep track of selected filters if you maintain a Set<String> activeFields
             filterBox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
                 if (isNowSelected) {
                     activeFields.add(field);
                 } else {
                     activeFields.remove(field);
                 }
+                runSearch();
             });
         });
     }
