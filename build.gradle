@@ -8,7 +8,7 @@ plugins {
 }
 
 group 'com.moubassher'
-version '3.0.0'
+version '3.0.1'
 
 repositories {
     mavenLocal()
@@ -29,7 +29,12 @@ application {
     ]
 }
 
-def javafxVersion = '23.0.1'
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+def javafxVersion = '17.0.17'
 
 javafx {
     version = javafxVersion
@@ -39,13 +44,8 @@ javafx {
 
 dependencies {
 
-    implementation "org.openjfx:javafx-base:$javafxVersion:win"
-    implementation "org.openjfx:javafx-media:$javafxVersion:win"
-    implementation "org.openjfx:javafx-controls:$javafxVersion:win"
-    implementation "org.openjfx:javafx-fxml:$javafxVersion:win"
-    implementation "org.openjfx:javafx-web:$javafxVersion:win"
-    implementation "org.openjfx:javafx-graphics:$javafxVersion:win"
 
+    implementation 'org.controlsfx:controlsfx:11.2.2'
 
     implementation 'me.xdrop:fuzzywuzzy:1.4.0'
 
@@ -69,6 +69,7 @@ publishing {
         mavenLocal() // this is the key line
     }
 }
+
 
 
 run {

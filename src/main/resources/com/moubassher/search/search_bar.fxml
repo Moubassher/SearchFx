@@ -1,24 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" prefWidth="600.0" styleClass="sensible_pane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" prefWidth="600.0" spacing="10.0" stylesheets="@search_bar_style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox prefWidth="200.0" styleClass="sensible_pane" VBox.vgrow="NEVER">
+      <HBox nodeOrientation="RIGHT_TO_LEFT" prefWidth="200.0" styleClass="sensible_pane" VBox.vgrow="NEVER">
          <children>
-            <TextField fx:id="searchField" HBox.hgrow="SOMETIMES" />
-            <Button mnemonicParsing="false" text="بحث" />
+            <TextField fx:id="searchField" promptText="بحث سريع..." HBox.hgrow="SOMETIMES" />
          </children>
       </HBox>
       <TitledPane fx:id="titledPane" expanded="false" nodeOrientation="RIGHT_TO_LEFT" prefHeight="150.0" prefWidth="200.0" text="بحث متقدّم">
          <content>
-            <FlowPane fx:id="filtersPane" hgap="5.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="200.0" prefWidth="200.0" styleClass="pane" vgap="5.0" />
+            <VBox>
+               <children>
+                  <Label styleClass="underlined" text="بحث باستخدام:" />
+                  <FlowPane fx:id="filtersPane" hgap="5.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="200.0" prefWidth="200.0" styleClass="pane" vgap="5.0" />
+                  <Label styleClass="underlined" text="تحديد النطاق:" />
+                  <ScrollPane fitToHeight="true" fitToWidth="true" pannable="true">
+                     <content>
+                        <VBox fx:id="rangePane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+                     </content>
+                  </ScrollPane>
+               </children>
+            </VBox>
          </content>
       </TitledPane>
    </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
 </VBox>

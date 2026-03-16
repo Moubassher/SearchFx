@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import org.controlsfx.control.RangeSlider?>
+
+<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" spacing="10.0" xmlns="http://javafx.com/javafx/17.0.17" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label fx:id="rangeLabel" text="المدى:" />
+      <RangeSlider fx:id="rangeSlider" blockIncrement="100.0" highValue="10000.0" lowValue="0.0" majorTickUnit="1000.0" max="10000.0" min="100.0" minorTickCount="100" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+      <Label text="من:" />
+      <TextField fx:id="minField" prefWidth="100.0" promptText="القيمة الأدنى" />
+      <Label text="إلى:" />
+      <TextField fx:id="maxField" prefWidth="100.0" promptText="القيمة الأعلى" />
+   </children>
+   <padding>
+      <Insets left="5.0" right="5.0" top="5.0" />
+   </padding>
+</HBox>

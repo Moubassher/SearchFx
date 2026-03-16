@@ -10,14 +10,15 @@ public class TestProduct implements Searchable<TestProduct> {
     private  String name;
     private  String category;
     private  String description;
-
+    private int price;
     public TestProduct() {
     }
 
-    public TestProduct(String name, String category, String description) {
+    public TestProduct(String name, String category, String description, int price) {
         this.name = name;
         this.category = category;
         this.description = description;
+        this.price = price;
     }
 
     public String getName() {
@@ -30,6 +31,10 @@ public class TestProduct implements Searchable<TestProduct> {
 
     public String getDescription() {
         return description;
+    }
+
+    public int getPrice() {
+        return price;
     }
 
     @Override

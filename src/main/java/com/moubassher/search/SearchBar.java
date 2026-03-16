@@ -3,17 +3,23 @@ package com.moubassher.search;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.NodeOrientation;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
+
+import static java.lang.Integer.parseInt;
 
 public class SearchBar<T extends Searchable<T>>  extends VBox {
 
@@ -26,6 +32,9 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
     @FXML
     private FlowPane filtersPane;
 
+    @FXML
+    private Pane rangePane;
+
     private Set<String> activeFields =new HashSet<>();
 
     private T searchable;
@@ -34,14 +43,16 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
 
     private Map<String, Map<String, List<T>>> invertedIndex;
 
-    //TODO add range filters for int parameters
+    private List<RangeFilter<T>> rangeFilters = new ArrayList<>();
 
-    public SearchBar(List<T> items, T prototype) {
-        this(); // call default constructor
+    private ResultHandler<T> resultHandler;
 
+    public SearchBar(List<T> items, T prototype, ResultHandler<T> resultHandler) {
+        this();
+        this.resultHandler = resultHandler;
         setSearchable(prototype);
         setItems(items);
-
+        activateSearch();
     }
 
     public SearchBar() {
@@ -55,7 +66,7 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         titledPane.expandedProperty().addListener((a, b, expanded) ->{
             if(expanded) {
                 this.toFront();
@@ -65,35 +76,41 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
         });
     }
 
-    public void activateSearch(List<T> items, T prototype, Function<List<T>, Pane> resultFunc) {
-        this.setItems(items);
-        setSearchable(prototype);
-        activateSearch(resultFunc);
+    private void activateSearch() {
+
+        if (activeFields.isEmpty()) {
+            activeFields = readActiveFilters();
+        }
+
+        searchField.textProperty().addListener((obs, oldText, query) -> {
+
+            // If query empty → show all items (better UX)
+            if (query == null || query.isBlank()) {
+
+                List<T> filtered = items.stream()
+                                .filter(this::passesRangeFilters)
+                                .toList();
+
+                resultHandler.show(filtered);
+                return;
+            }
+
+            List<Map.Entry<T, Double>> ranked =
+                    Search.fuzzySearch(query, items, invertedIndex, activeFields);
+
+            List<T> resultItems =
+                    ranked.stream()
+                            .map(Map.Entry::getKey)
+                            .filter(this::passesRangeFilters)
+                            .toList();
+
+            resultHandler.show(resultItems);
+        });
     }
 
     public void setItems(List<T> items) {
         this.items = items;
         invertedIndex = Search.buildInvertedIndex(items);
-    }
-
-    public void activateSearch(Function<List<T>, Pane> resultFunc) {
-        if (activeFields.isEmpty()) {
-            activeFields = readActiveFilters();
-        }
-
-        searchField.textProperty().addListener((a, b, query) -> {
-            if (query != null && !query.isBlank()) {
-
-                List<Map.Entry<T, Double>> results = Search.fuzzySearch(query, items, invertedIndex, activeFields);
-
-                // Map the entries to a list of T and pass them at once
-                List<T> resultItems = results.stream()
-                        .map(Map.Entry::getKey)
-                        .toList();
-
-                resultFunc.apply(FXCollections.observableList(resultItems));
-            }
-        });
     }
 
 
@@ -112,11 +129,9 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
     }
 
 
-
     public void addFilters() {
 
         Map<String, Function<T, String>> fields = searchable.getSearchableFields();
-
 
         fields.forEach((field, function) -> {
             CheckBox filterBox = new CheckBox(field);
@@ -136,6 +151,26 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
 
 
 
+    public void addRangeFunction(String name, ToIntFunction<T> func) {
+
+        Label label = new Label(name);
+
+        TextField min = new TextField();
+        min.setPromptText("من");
+
+        TextField max = new TextField();
+        max.setPromptText("إلى");
+
+        HBox row = new HBox(8);
+        row.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+
+        row.getChildren().addAll(label, min, max);
+
+        rangePane.getChildren().add(row);
+
+        rangeFilters.add(new RangeFilter<>(name, func, min, max));
+    }
+
 
     public void setExpanded(boolean value) {
         titledPane.setExpanded(value);
@@ -143,5 +178,51 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
 
     public boolean isExpanded() {
         return titledPane.isExpanded();
+    }
+
+    private boolean passesRangeFilters(T item) {
+
+        for (RangeFilter<T> rf : rangeFilters) {
+
+            int value = rf.extractor.applyAsInt(item);
+
+            Integer min = tryParseInt(rf.minField.getText());
+            Integer max = tryParseInt(rf.maxField.getText());
+
+            if (min != null && value < min) return false;
+            if (max != null && value > max) return false;
+        }
+
+        return true;
+    }
+    private Integer tryParseInt(String text) {
+
+        if (text == null || text.isBlank()) return null;
+
+        try {
+            return Integer.parseInt(text.trim());
+        } catch (NumberFormatException e) {
+            return null;   // ignore invalid user typing
+        }
+    }
+
+    private static class RangeFilter<T> {
+        String name;
+        ToIntFunction<T> extractor;
+        TextField minField;
+        TextField maxField;
+
+        RangeFilter(String name, ToIntFunction<T> extractor,
+                    TextField minField, TextField maxField) {
+            this.name = name;
+            this.extractor = extractor;
+            this.minField = minField;
+            this.maxField = maxField;
+        }
+    }
+
+    @FunctionalInterface
+    public interface ResultHandler<T> {
+        void show(List<T> results);
     }
 }

@@ -7,6 +7,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.lang.Integer.parseInt;
+
 public class Search {
 
 
@@ -66,7 +68,7 @@ public class Search {
         int totalDocs = allItems.size();
 
         for (String word : words) {
-            // Fuzzy match: find closest key in the inverted index
+            // Fuzzy match: find the closest key in the inverted index
             List<ExtractedResult> matches = FuzzySearch.extractAll(word, new ArrayList<>(invertedIndex.keySet()));
             for (ExtractedResult match : matches) {
                 if (match.getScore() < 70) continue; // ignore weak matches
@@ -124,9 +126,6 @@ public class Search {
         return index;
     }
 
-
-
-
     public static <T extends Searchable> List<String> getSearchParameters(T item, Function<T, List<String>> textExtractor) {
 
         return textExtractor.apply(item).stream()
@@ -134,4 +133,5 @@ public class Search {
                 .flatMap(s -> Arrays.stream(s.toLowerCase().split("\\s+")))
                 .collect(Collectors.toList());
     }
+
 }
