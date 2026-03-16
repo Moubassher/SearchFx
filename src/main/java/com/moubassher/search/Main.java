@@ -25,7 +25,7 @@ public class Main extends Application {
                 });
 
         searchBar.addRangeFunction("السعر", TestProduct::getPrice);
-        searchBar.addCriterion("تخفيض", TestProduct::hasDiscount);
+//        searchBar.addCriterion("تخفيض", TestProduct::hasDiscount);
 
         VBox root = new VBox(10, searchBar, results);
         RangePicker rangePicker = new RangePicker();

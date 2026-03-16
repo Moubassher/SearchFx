@@ -65,6 +65,6 @@ public class TestProduct implements Searchable<TestProduct> {
 
     @Override
     public String toString() {
-        return name + " ; " + description + " ; " + category;
+        return name + " ; " + description + " ; " + category + " ; discount: " + hasDiscount;
     }
 }

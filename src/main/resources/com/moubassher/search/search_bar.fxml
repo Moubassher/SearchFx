@@ -14,6 +14,8 @@
       <HBox nodeOrientation="RIGHT_TO_LEFT" prefWidth="200.0" styleClass="sensible_pane" VBox.vgrow="NEVER">
          <children>
             <TextField fx:id="searchField" promptText="بحث سريع..." HBox.hgrow="SOMETIMES" />
+            <Label text="عدد النتائج" />
+            <Label fx:id="resultSizeDisplay" text="Label" />
          </children>
       </HBox>
       <TitledPane fx:id="titledPane" expanded="false" nodeOrientation="RIGHT_TO_LEFT" prefHeight="150.0" prefWidth="200.0" text="بحث متقدّم">

@@ -178,28 +178,21 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
         rangeFilters.add(new RangeFilter<>(name, func, min, max));
     }
 
-    public void addCriterion(String name, Function<T, Boolean> criterionFunc) {
+    private void buildBooleanCriteria() {
 
-        CheckBox checkBox = new CheckBox(name);
-        checkBox.setSelected(true);   // active by default
+        Map<String, Function<T, Boolean>> map = searchable.getBooleanFilters();
 
-        // add checkbox directly to criteriaPane
-        criteriaPane.getChildren().add(checkBox);
+        map.forEach((name, func) -> {
 
-        // store function
-        booleanFilters.put(name, criterionFunc);
+            CheckBox checkBox = new CheckBox(name);
+            checkBox.setSelected(true);
 
-        // mark active initially
-        activeBooleanFilters.add(name);
+            // store function inside checkbox (BEST design)
+            checkBox.setUserData(func);
 
-        // update active set on toggle
-        checkBox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
-            if (isNowSelected) {
-                activeBooleanFilters.add(name);
-            } else {
-                activeBooleanFilters.remove(name);
-            }
-            runSearch();
+            criteriaPane.getChildren().add(checkBox);
+
+            checkBox.selectedProperty().addListener((obs, was, isNow) -> runSearch());
         });
     }
 
@@ -209,7 +202,7 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
         booleanFilters.forEach((label, func) -> {
             CheckBox cb = new CheckBox(label);
             cb.setSelected(true); // default enabled
-            filtersPane.getChildren().add(cb);
+            criteriaPane.getChildren().add(cb);
 
             cb.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
                 if (isNowSelected) {
