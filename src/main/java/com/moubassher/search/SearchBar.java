@@ -27,6 +27,9 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
     private TextField searchField;
 
     @FXML
+    private Label resultSizeDisplay;
+
+    @FXML
     private TitledPane titledPane;
 
     @FXML
@@ -51,14 +54,27 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
     private ResultHandler<T> resultHandler;
 
     public SearchBar(List<T> items, T prototype, ResultHandler<T> resultHandler) {
-        this();
+        loadFxml();
         this.resultHandler = resultHandler;
         setSearchable(prototype);
         setItems(items);
         activateSearch();
     }
 
+    public void initialize(List<T> items, T prototype, ResultHandler<T> resultHandler) {
+        this.resultHandler = resultHandler;
+        setSearchable(prototype);
+        setItems(items);
+        activateSearch();
+    }
+
+
+
     public SearchBar() {
+        loadFxml();
+    }
+
+    private void loadFxml() {
         FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("search_bar.fxml"));
 
         fxmlLoader.setController(this);
@@ -114,6 +130,9 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
                         .filter(this::passesBooleanFilters)
                         .toList();
 
+        int resultSize = resultItems.size();
+        resultSizeDisplay.setText(resultSize+"");
+
         resultHandler.show(resultItems);
     }
 
@@ -136,6 +155,7 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
         this.searchable = searchable;
         addFilters();
         addBooleanFilters();
+        addRangeFilters();
     }
 
 
@@ -158,24 +178,29 @@ public class SearchBar<T extends Searchable<T>>  extends VBox {
         });
     }
 
-    public void addRangeFunction(String name, ToIntFunction<T> func) {
+    private void addRangeFilters() {
 
-        Label label = new Label(name);
+        Map<String, ToIntFunction<T>> map = searchable.getRangeFilters();
 
-        TextField min = new TextField();
-        min.setPromptText("من");
+        map.forEach((name, func) -> {
 
-        TextField max = new TextField();
-        max.setPromptText("إلى");
+            Label label = new Label(name);
 
-        HBox row = new HBox(8);
-        row.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+            TextField min = new TextField();
+            min.setPromptText("من");
 
-        row.getChildren().addAll(label, min, max);
+            TextField max = new TextField();
+            max.setPromptText("إلى");
 
-        rangePane.getChildren().add(row);
+            HBox row = new HBox(8);
+            row.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
 
-        rangeFilters.add(new RangeFilter<>(name, func, min, max));
+            row.getChildren().addAll(label, min, max);
+
+            rangePane.getChildren().add(row);
+
+            rangeFilters.add(new RangeFilter<>(name, func, min, max));
+        });
     }
 
     private void buildBooleanCriteria() {

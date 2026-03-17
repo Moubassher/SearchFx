@@ -2,9 +2,11 @@ package com.moubassher.search.testSearchables;
 
 import com.moubassher.search.Searchable;
 
+import java.time.format.TextStyle;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
 public class TestProduct implements Searchable<TestProduct> {
     private  String name;
@@ -61,6 +63,11 @@ public class TestProduct implements Searchable<TestProduct> {
         Map<String, Function<TestProduct, Boolean>> booleanFilters = new HashMap<>();
         booleanFilters.put("تخفيض", p -> p.hasDiscount);
         return booleanFilters;
+    }
+
+    @Override
+    public Map<String, ToIntFunction<TestProduct>> getRangeFilters() {
+        return Map.of("السعر", TestProduct::getPrice);
     }
 
     @Override
